@@ -51,8 +51,8 @@ INSTALLED_APPS = [
 
     'home',
     'user_acc',
-    # 'card',
-    # 'order',
+    'card',
+    'order',
 ]
 
 REST_FRAMEWORK = {
