@@ -64,7 +64,7 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny'], #IsAuthenticated AllowAny
+        'rest_framework.permissions.IsAuthenticated'], #IsAuthenticated AllowAny
 }
 
 MIDDLEWARE = [

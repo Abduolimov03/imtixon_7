@@ -7,6 +7,9 @@ from home.models import Kompyuter
 from .serializers import CardSerializer, CardItemSerializer
 from .models import Card, CardItem
 from user_acc.user_perm import IsUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+
 
 
 class CardCreate(APIView):
@@ -99,3 +102,49 @@ class CardItemUpdate(APIView):
             'msg': 'Ozgartirildi'
         }
         return Response(data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def card_detail(request):
+    try:
+        cart = Card.objects.get(user=request.user)
+    except Card.DoesNotExist:
+        return Response({'detail': 'Sizning savatingiz bo‘sh'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = CardSerializer(cart)
+    return Response({'data': serializer.data, 'status': status.HTTP_200_OK})
+
+
+@api_view(['POST'])
+def card_remove_item(request):
+    kompyuter_id = request.data.get('kompyuter_id')
+    if not kompyuter_id:
+        return Response({'error': 'kompyuter_id kerak'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        card = Card.objects.get(user=request.user)
+    except Card.DoesNotExist:
+        return Response({'error': 'Savat topilmadi'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        item = card.items.get(kompyuter_id=kompyuter_id)
+        item.delete()
+        return Response({'status': 'Mahsulot o‘chirildi'}, status=status.HTTP_200_OK)
+    except CardItem.DoesNotExist:
+        return Response({'error': 'Mahsulot savatda topilmadi'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def card_clear(request):
+    try:
+        card = Card.objects.get(user=request.user)
+    except Card.DoesNotExist:
+        return Response({'error': 'Savat topilmadi'}, status=status.HTTP_404_NOT_FOUND)
+
+    card.items.all().delete()
+    return Response({'status': 'Savat tozalandi'}, status=status.HTTP_200_OK)
+
+
+

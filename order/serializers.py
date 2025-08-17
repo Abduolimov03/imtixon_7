@@ -5,11 +5,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
     total_price = serializers.ReadOnlyField()
     class Meta:
         model = OrderItem
-        fields = ['id', 'card', 'product', 'amount', 'created_at', 'updated_at', 'total_price']
+        fields = ['id', 'kompyuter', 'ammount', 'total_price']
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer()
+    items = OrderItemSerializer(many=True, read_only=True)
     total_price = serializers.ReadOnlyField()
 
     class Meta:
